@@ -1,0 +1,27 @@
+{
+  "name": "ollama",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "hono": "^4.12.14",
+    "nanoid": "^5.1.9",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.83.0"
+  }
+}
