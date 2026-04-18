@@ -51,7 +51,11 @@ app.post('/shorten', async (c) => {
       created_at: Date;
     }[]>;
 
-    const link = Array.isArray(result) && result.length > 0 ? result[0] : result;
+    if (!Array.isArray(result) || result.length === 0) {
+      throw new Error('Failed to create short URL');
+    }
+
+    const link = result[0];
 
     // Construct the short URL (in production, this would be your domain)
     const host = c.req.header('Host') || 'localhost:8787';
@@ -66,7 +70,8 @@ app.post('/shorten', async (c) => {
     if (error instanceof z.ZodError) {
       return c.json({ error: 'Invalid URL' }, 400);
     }
-    throw error;
+    console.error('Error in shorten endpoint:', error);
+    return c.json({ error: 'Internal Server Error' }, 500);
   }
 });
 
