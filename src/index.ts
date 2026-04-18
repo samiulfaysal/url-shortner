@@ -11,7 +11,7 @@ const nanoid = customAlphabet('23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrs
 type Bindings = {
   DATABASE_URL: string;
   JWT_SECRET: string;
-  ASSETS: Fetcher; // Tell TypeScript about the Cloudflare Assets fetcher
+  ASSETS: { fetch: (req: Request) => Promise<Response> }; // Tell TypeScript about the Cloudflare Assets fetcher
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
