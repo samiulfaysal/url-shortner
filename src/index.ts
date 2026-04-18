@@ -59,7 +59,7 @@ app.post('/shorten', async (c) => {
 
     // Construct the short URL (in production, this would be your domain)
     const host = c.req.header('Host') || 'localhost:8787';
-    const shortUrl = `https://${host}/api/${slug}`;
+    const shortUrl = `https://${host}/${slug}`;
 
     return c.json({
       shortUrl,
@@ -75,47 +75,16 @@ app.post('/shorten', async (c) => {
   }
 });
 
-// GET /api/:slug - Redirect to original URL
-app.get('/api/:slug', async (c) => {
-  const { slug } = c.req.param();
-
-  const db = getDb(c.env.DATABASE_URL);
-
-  // Find the link by slug
-  const result = await db`
-    SELECT id, original_url, clicks
-    FROM links
-    WHERE slug = ${slug}
-  ` as unknown as Promise<{
-    id: number;
-    slug: string;
-    original_url: string;
-    clicks: number;
-    created_at: Date;
-  }[]>;
-
-  if (!Array.isArray(result) || result.length === 0) {
-    return c.json({ error: 'URL not found' }, 404);
-  }
-
-  const link = result[0];
-
-  // Increment click count
-  await db`
-    UPDATE links
-    SET clicks = clicks + 1
-    WHERE id = ${link.id}
-  `;
-
-  // Redirect to original URL
-  return c.redirect(link.original_url, 301);
-});
-
-// Catch-all route for handling direct slug access (without /api prefix)
+// Redirect route for 6-character slugs - placed at the end to avoid intercepting routes
 app.get('/:slug', async (c) => {
   const { slug } = c.req.param();
 
-  // Avoid interfering with API routes
+  // Only process if slug is exactly 6 characters to avoid interfering with other routes
+  if (slug.length !== 6) {
+    return c.notFound();
+  }
+
+  // Avoid interfering with specific routes
   if (slug === 'shorten' || slug === 'api') {
     return c.notFound();
   }

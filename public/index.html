@@ -3,58 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL Shortener</title>
+    <title>Codorax Link</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @layer base {
+            html {
+                font-family: 'Inter', sans-serif;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
     <div class="w-full max-w-xl">
-        <h1 class="text-3xl font-bold mb-6 text-center">URL Shortener</h1>
+        <!-- Glassmorphism Container -->
+        <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-inner">
+            <!-- Branding -->
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 mb-6 text-center">
+                Codorax Link
+            </h1>
 
-        <form id="shorten-form" class="bg-gray-800 rounded-lg p-6 w-full">
-            <div class="mb-4">
-                <label for="url-input" class="block mb-2 font-medium">Enter URL to shorten:</label>
-                <input
-                    type="url"
-                    id="url-input"
-                    required
-                    class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="https://example.com/very/long/url"
-                />
-            </div>
-
-            <button
-                type="submit"
-                id="shorten-btn"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-            >
-                Shorten URL
-            </button>
-        </form>
-
-        <div id="result" class="mt-6 hidden">
-            <div class="bg-gray-800 rounded-lg p-4">
-                <p class="mb-2 font-medium">Your short URL:</p>
-                <div class="flex items-center space-x-3">
+            <!-- Form -->
+            <form id="shorten-form" class="space-y-4">
+                <div class="space-y-2">
+                    <label for="url-input" class="block text-sm font-medium text-white/90">
+                        Enter URL to shorten:
+                    </label>
                     <input
-                        type="text"
-                        id="short-url-output"
-                        readonly
-                        class="flex-1 bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-sm"
+                        type="url"
+                        id="url-input"
+                        required
+                        class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-white placeholder-white/60 transition-all duration-200"
+                        placeholder="https://example.com/very/long/url"
                     />
-                    <button
-                        id="copy-btn"
-                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Copy
-                    </button>
+                </div>
+
+                <button
+                    type="submit"
+                    id="shorten-btn"
+                    class="w-full bg-blue-500/20 hover:bg-blue-500/30 active:bg-blue-500/40 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                >
+                    Shorten URL
+                </button>
+            </form>
+
+            <!-- Result Section -->
+            <div id="result" class="mt-6 hidden">
+                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 space-y-4">
+                    <p class="mb-2 text-sm font-medium text-white/90">
+                        Your short URL:
+                    </p>
+                    <div class="flex items-center space-x-3">
+                        <input
+                            type="text"
+                            id="short-url-output"
+                            readonly
+                            class="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-sm text-white focus:outline-none"
+                        />
+                        <button
+                            id="copy-btn"
+                            class="bg-green-500/20 hover:bg-green-500/30 active:bg-green-500/40 text-green-400 font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                            Copy
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div id="error" class="mt-4 hidden text-red-400 text-center"></div>
+            <!-- Error Section -->
+            <div id="error" class="mt-4 hidden text-red-400 text-center"></div>
+
+            <!-- Recent Links Section -->
+            <div id="recent-links" class="mt-8">
+                <h2 class="text-sm font-medium text-white/80 mb-3">
+                    Recent Links
+                </h2>
+                <div id="recent-links-container" class="space-y-2"></div>
+            </div>
+        </div>
     </div>
 
 <script>
+    // Load recent links from localStorage on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadRecentLinks();
+    });
+
     document.getElementById('shorten-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -74,7 +108,13 @@
         }
 
         shortenBtn.disabled = true;
-        shortenBtn.textContent = 'Shortening...';
+        shortenBtn.innerHTML = `
+            <span>Shortening...</span>
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+        `;
         errorDiv.classList.add('hidden');
 
         try {
@@ -93,14 +133,26 @@
 
             const data = await response.json();
             shortUrlOutput.value = data.shortUrl;
+
+            // Add entrance animation to result div
             resultDiv.classList.remove('hidden');
+            resultDiv.style.opacity = '0';
+            resultDiv.style.transform = 'translateY(20px)';
+            requestAnimationFrame(() => {
+                resultDiv.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                resultDiv.style.opacity = '1';
+                resultDiv.style.transform = 'translateY(0)';
+            });
+
+            // Save to recent links
+            saveRecentLink(data.shortUrl, urlInput.value);
 
         } catch (error) {
             errorDiv.textContent = error.message || 'An error occurred';
             errorDiv.classList.remove('hidden');
         } finally {
             shortenBtn.disabled = false;
-            shortenBtn.textContent = 'Shorten URL';
+            shortenBtn.innerHTML = 'Shorten URL';
         }
     });
 
@@ -112,11 +164,85 @@
         const copyBtn = document.getElementById('copy-btn');
         const originalText = copyBtn.textContent;
         copyBtn.textContent = 'Copied!';
+        copyBtn.classList.remove('bg-green-500/20', 'hover:bg-green-500/30', 'active:bg-green-500/40');
+        copyBtn.classList.add('bg-green-500', 'text-white');
 
         setTimeout(() => {
             copyBtn.textContent = originalText;
+            copyBtn.classList.remove('bg-green-500', 'text-white');
+            copyBtn.classList.add('bg-green-500/20', 'hover:bg-green-500/30', 'active:bg-green-500/40');
         }, 2000);
     });
+
+    // Recent Links Functions
+    function saveRecentLink(shortUrl, originalUrl) {
+        const recentLinks = JSON.parse(localStorage.getItem('recentLinks') || '[]');
+
+        // Add new link to the beginning
+        recentLinks.unshift({ shortUrl, originalUrl, timestamp: Date.now() });
+
+        // Keep only last 3 links
+        const limitedLinks = recentLinks.slice(0, 3);
+
+        // Save back to localStorage
+        localStorage.setItem('recentLinks', JSON.stringify(limitedLinks));
+
+        // Update UI
+        loadRecentLinks();
+    }
+
+    function loadRecentLinks() {
+        const recentLinks = JSON.parse(localStorage.getItem('recentLinks') || '[]');
+        const container = document.getElementById('recent-links-container');
+
+        if (!container) return;
+
+        // Clear current links
+        container.innerHTML = '';
+
+        if (recentLinks.length === 0) {
+            container.innerHTML = '<p class="text-xs text-white/60 italic">No recent links</p>';
+            return;
+        }
+
+        // Add each link
+        recentLinks.forEach((link, index) => {
+            const linkElement = document.createElement('div');
+            linkElement.className = 'flex items-center justify-between px-3 py-2 bg-white/5 backdrop-blur-sm rounded border border-white/10';
+            linkElement.innerHTML = `
+                <div class="flex-1">
+                    <a href="${link.shortUrl}" target="_blank" class="text-white/90 hover:text-white break-all truncate max-w-xs">${link.shortUrl}</a>
+                    <div class="text-xs text-white/60 mt-1">${link.originalUrl}</div>
+                </div>
+                <button
+                    onclick="copyToClipboard('${link.shortUrl}')"
+                    class="text-xs text-blue-400 hover:text-blue-300 p-1 rounded"
+                >
+                    Copy
+                </button>
+            `;
+            container.appendChild(linkElement);
+        });
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            // Show temporary feedback
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            btn.classList.remove('text-blue-400', 'hover:text-blue-300');
+            btn.classList.add('text-green-400');
+
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('text-green-400');
+                btn.classList.add('text-blue-400', 'hover:text-blue-300');
+            }, 1500);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    }
 </script>
 </body>
 </html>
