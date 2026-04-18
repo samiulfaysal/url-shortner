@@ -2,17 +2,17 @@ import { Hono } from 'hono';
 import { getDb } from './db';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
-import { serveStatic } from 'hono/cloudflare-workers';
 
-const app = new Hono();
+type Bindings = {
+  DATABASE_URL: string;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
 
 // Validation schema for URL
 const urlSchema = z.object({
   url: z.string().url('Invalid URL format'),
 });
-
-// Serve static files from public directory
-app.use('/*', serveStatic({ root: './public/', manifest: {} }));
 
 // Initialize database
 app.onError((err, c) => {
@@ -26,7 +26,7 @@ app.post('/shorten', async (c) => {
     const body = await c.req.json();
     const { url } = urlSchema.parse(body);
 
-    const db = getDb();
+    const db = getDb(c.env.DATABASE_URL);
 
     // Generate a unique 6-character slug
     let slug = '';
@@ -74,7 +74,7 @@ app.post('/shorten', async (c) => {
 app.get('/api/:slug', async (c) => {
   const { slug } = c.req.param();
 
-  const db = getDb();
+  const db = getDb(c.env.DATABASE_URL);
 
   // Find the link by slug
   const result = await db`
@@ -115,7 +115,7 @@ app.get('/:slug', async (c) => {
     return c.notFound();
   }
 
-  const db = getDb();
+  const db = getDb(c.env.DATABASE_URL);
 
   // Find the link by slug
   const result = await db`
