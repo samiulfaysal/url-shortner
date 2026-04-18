@@ -43,7 +43,7 @@ app.post('/shorten', async (c) => {
       INSERT INTO links (slug, original_url)
       VALUES (${slug}, ${url})
       RETURNING id, slug, original_url, clicks, created_at
-    ` as Promise<{
+    ` as unknown as Promise<{
       id: number;
       slug: string;
       original_url: string;
@@ -81,7 +81,7 @@ app.get('/api/:slug', async (c) => {
     SELECT id, original_url, clicks
     FROM links
     WHERE slug = ${slug}
-  ` as Promise<{
+  ` as unknown as Promise<{
     id: number;
     slug: string;
     original_url: string;
@@ -122,7 +122,7 @@ app.get('/:slug', async (c) => {
     SELECT id, original_url, clicks
     FROM links
     WHERE slug = ${slug}
-  ` as Promise<{
+  ` as unknown as Promise<{
     id: number;
     slug: string;
     original_url: string;
