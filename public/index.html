@@ -18,10 +18,40 @@
     <div class="w-full max-w-xl">
         <!-- Glassmorphism Container -->
         <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-inner">
-            <!-- Branding -->
-            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 mb-6 text-center">
-                Codorax Link
-            </h1>
+            <!-- Header with User Info -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+                        Codorax Link
+                    </h1>
+                    <p class="mt-1 text-sm text-white/70">Professional URL Shortener</p>
+                </div>
+                <div id="user-info" class="hidden flex items-center space-x-3">
+                    <div class="flex items-center">
+                        <div class="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-medium">
+                            <span id="user-initials">U</span>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-sm font-medium text-white" id="user-name">User Name</p>
+                            <p class="text-xs text-white/60" id="user-email">user@example.com</p>
+                        </div>
+                    </div>
+                    <button
+                        id="logout-btn"
+                        class="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 font-medium rounded-lg transition-colors duration-200"
+                    >
+                        Logout
+                    </button>
+                </div>
+                <div id="auth-buttons" class="flex space-x-3">
+                    <a href="/login.html" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-sm font-medium text-white transition-all duration-200">
+                        Login
+                    </a>
+                    <a href="/login.html" class="ml-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-white font-semibold rounded-lg transition-all duration-200">
+                        Sign Up
+                    </a>
+                </div>
+            </div>
 
             <!-- Form -->
             <form id="shorten-form" class="space-y-4">
@@ -84,9 +114,76 @@
     </div>
 
 <script>
-    // Load recent links from localStorage on page load
+    // Check auth status on page load
     document.addEventListener('DOMContentLoaded', () => {
+        checkAuthStatus();
         loadRecentLinks();
+    });
+
+    // Check authentication status
+    async function checkAuthStatus() {
+        try {
+            const response = await fetch('/auth/me', {
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                showUserInfo(userData);
+            } else {
+                hideUserInfo();
+            }
+        } catch (error) {
+            hideUserInfo();
+        }
+    }
+
+    // Show user info in header
+    function showUserInfo(userData) {
+        document.getElementById('user-info').classList.remove('hidden');
+        document.getElementById('auth-buttons').classList.add('hidden');
+
+        // Set user initials (first letter of first and last name, or first two letters of email)
+        const nameParts = userData.name ? userData.name.split(' ') : [];
+        if (nameParts.length >= 2) {
+            document.getElementById('user-initials').textContent =
+                (nameParts[0][0] + nameParts[1][0]).toUpperCase();
+        } else if (userData.email) {
+            const emailPrefix = userData.email.split('@')[0];
+            document.getElementById('user-initials').textContent =
+                emailPrefix.substring(0, 2).toUpperCase();
+        } else {
+            document.getElementById('user-initials').textContent = 'U';
+        }
+
+        document.getElementById('user-name').textContent = userData.name || userData.email || 'User';
+        document.getElementById('user-email').textContent = userData.email || '';
+    }
+
+    // Hide user info and show auth buttons
+    function hideUserInfo() {
+        document.getElementById('user-info').classList.add('hidden');
+        document.getElementById('auth-buttons').classList.remove('hidden');
+    }
+
+    // Logout functionality
+    document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch('/auth/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                hideUserInfo();
+                // Reload page to clear any cached state
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     });
 
     document.getElementById('shorten-form')?.addEventListener('submit', async (e) => {
@@ -123,6 +220,7 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({ url }),
             });
 

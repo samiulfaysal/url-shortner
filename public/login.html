@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codorax Link - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @layer base {
+            html {
+                font-family: 'Inter', sans-serif;
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Glassmorphism Container -->
+        <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-inner">
+            <!-- Branding -->
+            <div class="text-center mb-8">
+                <h1
+                    class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+                    Codorax Link
+                </h1>
+                <p class="mt-2 text-sm text-white/70">Secure URL Shortening Platform</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex mb-6">
+                <button id="login-tab"
+                    class="flex-1 px-4 py-3 text-white/80 border-b-2 border-transparent hover:text-white transition-all duration-200 font-medium">
+                    Login
+                </button>
+                <button id="signup-tab"
+                    class="flex-1 px-4 py-3 text-white/50 border-b-2 border-transparent hover:text-white transition-all duration-200 font-medium">
+                    Sign Up
+                </button>
+            </div>
+
+            <!-- Forms Container -->
+            <div id="forms-container" class="space-y-4">
+                <!-- Login Form -->
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label for="login-email" class="block text-sm font-medium text-white/90 mb-1">
+                            Email Address
+                        </label>
+                        <input type="email" id="login-email" required
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-white placeholder-white/60"
+                            placeholder="Enter your email" />
+                    </div>
+
+                    <div>
+                        <label for="login-password" class="block text-sm font-medium text-white/90 mb-1">
+                            Password
+                        </label>
+                        <input type="password" id="login-password" required
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-white placeholder-white/60"
+                            placeholder="Enter your password" />
+                    </div>
+
+                    <button type="submit" id="login-btn"
+                        class="w-full bg-blue-500/20 hover:bg-blue-500/30 active:bg-blue-500/40 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]">
+                        Login
+                    </button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="hidden space-y-4">
+                    <div>
+                        <label for="signup-email" class="block text-sm font-medium text-white/90 mb-1">
+                            Email Address
+                        </label>
+                        <input type="email" id="signup-email" required
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-white placeholder-white/60"
+                            placeholder="Enter your email" />
+                    </div>
+
+                    <div>
+                        <label for="signup-password" class="block text-sm font-medium text-white/90 mb-1">
+                            Password
+                        </label>
+                        <input type="password" id="signup-password" required
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-white placeholder-white/60"
+                            placeholder="Create a password" />
+                    </div>
+
+                    <div>
+                        <label for="signup-confirm-password" class="block text-sm font-medium text-white/90 mb-1">
+                            Confirm Password
+                        </label>
+                        <input type="password" id="signup-confirm-password" required
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-white placeholder-white/60"
+                            placeholder="Confirm your password" />
+                    </div>
+
+                    <button type="submit" id="signup-btn"
+                        class="w-full bg-blue-500/20 hover:bg-blue-500/30 active:bg-blue-500/40 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]">
+                        Sign Up
+                    </button>
+                </form>
+            </div>
+
+            <!-- Messages -->
+            <div id="auth-message" class="mt-4 hidden px-4 py-3 rounded-lg text-center"></div>
+
+            <!-- Footer -->
+            <div class="mt-6 text-center text-white/60 text-sm">
+                <p>By continuing, you agree to our Terms of Service</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        const loginTab = document.getElementById('login-tab');
+        const signupTab = document.getElementById('signup-tab');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const authMessage = document.getElementById('auth-message');
+
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.remove('text-white/50');
+            loginTab.classList.add('text-white/80', 'border-b-2', 'border-transparent');
+            signupTab.classList.remove('text-white/80');
+            signupTab.classList.add('text-white/50');
+            loginForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+            authMessage.classList.add('hidden');
+        });
+
+        signupTab.addEventListener('click', () => {
+            signupTab.classList.remove('text-white/50');
+            signupTab.classList.add('text-white/80', 'border-b-2', 'border-transparent');
+            loginTab.classList.remove('text-white/80');
+            loginTab.classList.add('text-white/50');
+            signupForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+            authMessage.classList.add('hidden');
+        });
+
+        // Show message function
+        function showMessage(message, isError = false) {
+            authMessage.textContent = message;
+            authMessage.className = `mt-4 px-4 py-3 rounded-lg text-center transition-all duration-300 ${isError ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`;
+            authMessage.classList.remove('hidden');
+
+            setTimeout(() => {
+                authMessage.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Login form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const loginBtn = document.getElementById('login-btn');
+
+            if (!email || !password) {
+                showMessage('Please fill in all fields', true);
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = `
+            <span>Logging in...</span>
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+        `;
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                // --- FIND THIS SECTION IN YOUR LOGIN.HTML ---
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+
+                showMessage('Login successful! Redirecting...');
+
+                // 🚀 UPDATED REDIRECTION LOGIC
+                setTimeout(() => {
+                    // Check if the user is an admin based on the response from /auth/login
+                    if (data.user && data.user.role === 'admin') {
+                        window.location.href = '/admin'; // Redirects to the dashboard
+                    } else {
+                        window.location.href = '/'; // Regular users go to the shortener
+                    }
+                }, 1500);
+
+            } catch (error) {
+                showMessage(error.message || 'Authentication failed', true);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Login';
+            }
+        });
+
+        // Signup form submission
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            const signupBtn = document.getElementById('signup-btn');
+
+            if (!email || !password || !confirmPassword) {
+                showMessage('Please fill in all fields', true);
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match', true);
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters', true);
+                return;
+            }
+
+            signupBtn.disabled = true;
+            signupBtn.innerHTML = `
+            <span>Creating account...</span>
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+        `;
+
+            try {
+                const response = await fetch('/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Signup failed');
+                }
+
+                showMessage('Account created successfully! Please login.');
+
+                // Switch to login tab
+                loginTab.click();
+                signupForm.reset();
+
+            } catch (error) {
+                showMessage(error.message || 'Registration failed', true);
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.innerHTML = 'Sign Up';
+            }
+        });
+    </script>
+</body>
+
+</html>
