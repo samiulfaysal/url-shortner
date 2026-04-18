@@ -54,69 +54,69 @@
         <div id="error" class="mt-4 hidden text-red-400 text-center"></div>
     </div>
 
-    <script>
-        document.getElementById('shorten-form')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
+<script>
+    document.getElementById('shorten-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-            const urlInput = document.getElementById('url-input') as HTMLInputElement;
-            const shortenBtn = document.getElementById('shorten-btn') as HTMLButtonElement;
-            const resultDiv = document.getElementById('result');
-            const shortUrlOutput = document.getElementById('short-url-output') as HTMLInputElement;
-            const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement;
-            const errorDiv = document.getElementById('error');
+        const urlInput = document.getElementById('url-input');
+        const shortenBtn = document.getElementById('shorten-btn');
+        const resultDiv = document.getElementById('result');
+        const shortUrlOutput = document.getElementById('short-url-output');
+        const copyBtn = document.getElementById('copy-btn');
+        const errorDiv = document.getElementById('error');
 
-            const url = urlInput.value.trim();
+        const url = urlInput.value.trim();
 
-            if (!url) {
-                errorDiv.textContent = 'Please enter a URL';
-                errorDiv.classList.remove('hidden');
-                return;
+        if (!url) {
+            errorDiv.textContent = 'Please enter a URL';
+            errorDiv.classList.remove('hidden');
+            return;
+        }
+
+        shortenBtn.disabled = true;
+        shortenBtn.textContent = 'Shortening...';
+        errorDiv.classList.add('hidden');
+
+        try {
+            const response = await fetch('/shorten', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to shorten URL');
             }
 
-            shortenBtn.disabled = true;
-            shortenBtn.textContent = 'Shortening...';
-            errorDiv.classList.add('hidden');
+            const data = await response.json();
+            shortUrlOutput.value = data.shortUrl;
+            resultDiv.classList.remove('hidden');
 
-            try {
-                const response = await fetch('/shorten', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ url }),
-                });
+        } catch (error) {
+            errorDiv.textContent = error.message || 'An error occurred';
+            errorDiv.classList.remove('hidden');
+        } finally {
+            shortenBtn.disabled = false;
+            shortenBtn.textContent = 'Shorten URL';
+        }
+    });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to shorten URL');
-                }
+    document.getElementById('copy-btn')?.addEventListener('click', () => {
+        const shortUrlOutput = document.getElementById('short-url-output');
+        shortUrlOutput.select();
+        document.execCommand('copy');
 
-                const data = await response.json();
-                shortUrlOutput.value = data.shortUrl;
-                resultDiv.classList.remove('hidden');
+        const copyBtn = document.getElementById('copy-btn');
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
 
-            } catch (error) {
-                errorDiv.textContent = error.message || 'An error occurred';
-                errorDiv.classList.remove('hidden');
-            } finally {
-                shortenBtn.disabled = false;
-                shortenBtn.textContent = 'Shorten URL';
-            }
-        });
-
-        document.getElementById('copy-btn')?.addEventListener('click', () => {
-            const shortUrlOutput = document.getElementById('short-url-output') as HTMLInputElement;
-            shortUrlOutput.select();
-            document.execCommand('copy');
-
-            const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement;
-            const originalText = copyBtn.textContent;
-            copyBtn.textContent = 'Copied!';
-
-            setTimeout(() => {
-                copyBtn.textContent = originalText;
-            }, 2000);
-        });
-    </script>
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+        }, 2000);
+    });
+</script>
 </body>
 </html>
