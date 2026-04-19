@@ -170,6 +170,28 @@ authRouter.post('/logout', (c) => {
   return c.json({ message: 'Logged out successfully' });
 });
 
+// 👇 ADD THIS NEW ROUTE 👇
+authRouter.get('/me', async (c) => {
+  const token = getAuthTokenFromCookie(c);
+  if (!token) {
+    return c.json({ authenticated: false }, 401);
+  }
+
+  try {
+    const payload = await verifyToken(token, c.env.JWT_SECRET);
+    return c.json({
+      authenticated: true,
+      user: {
+        id: payload.userId,
+        email: payload.email,
+        role: payload.role
+      }
+    });
+  } catch (e) {
+    return c.json({ authenticated: false }, 401);
+  }
+});
+// 👆 END OF NEW ROUTE 👆
 // Apply auth routes
 app.route('/auth', authRouter);
 

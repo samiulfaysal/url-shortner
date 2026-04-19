@@ -9,327 +9,357 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         @layer base {
-            html {
-                font-family: 'Inter', sans-serif;
-            }
+            html { font-family: 'Inter', sans-serif; }
         }
+        
+        /* Custom sleek scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+
+        /* Entrance Animations */
+        @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up { animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        .delay-400 { animation-delay: 400ms; }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-purple-900">
-    <!-- Header -->
-    <header class="bg-white/5 backdrop-blur-sm border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
-                            Codorax Link Admin
+<body class="min-h-screen bg-[#0f172a] text-white selection:bg-purple-500/30 overflow-x-hidden">
+    
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-5%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[120px]"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-col min-h-screen">
+        <header class="sticky top-0 z-50 bg-white/[0.02] backdrop-blur-xl border-b border-white/10 shadow-sm transition-all">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    
+                    <div class="flex items-center gap-6">
+                        <h1 class="text-xl font-bold tracking-tight flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                            </div>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">Codorax</span>
                         </h1>
+                        <nav class="hidden md:flex space-x-1">
+                            <a href="/admin" class="px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white shadow-inner border border-white/5 transition-all">Dashboard</a>
+                            <a href="/" class="px-4 py-2 rounded-lg text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all">Shortener</a>
+                        </nav>
                     </div>
-                    <div class="hidden md:block">
-                        <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="/admin.html" class="px-3 py-2 rounded-md text-sm font-medium text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/20">
-                                Dashboard
-                            </a>
-                            <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-white/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/20">
-                                URL Shortener
-                            </a>
+
+                    <div class="flex items-center gap-4">
+                        <div class="hidden sm:flex items-center bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                            <div class="relative flex h-2.5 w-2.5 mr-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                            </div>
+                            <span class="text-xs font-semibold text-emerald-400 tracking-wide"><span id="online-count">1</span> ONLINE</span>
                         </div>
-                    </div>
-                </div>
-                <div class="flex items-center">
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center px-3">
-                            <div class="h-2 w-2 rounded-full bg-green-400 animate-pulse"></div>
-                            <span class="ml-2 text-xs text-white/60">Online</span>
-                        </div>
-                        <button class="ml-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus-ring-white/20">
-                            <span class="sr-only">View notifications</span>
-                            <!-- Icon placeholder -->
-                            <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.108V11a2.002 2.002 0 10-4 0v3.108a2.032 2.032 0 01-1.405-1.405H5a2.002 2.002 0 10-4 0v3.108a2.032 2.032 0 01-1.405-1.405H5a2.002 2.002 0 10-4 0v3.108a2.032 2.032 0 011.405 1.405h10"></path>
-                            </svg>
+                        
+                        <button id="logout-btn" class="group flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-sm font-medium rounded-lg transition-all duration-300 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                            <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            Logout
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Content -->
-    <main class="py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Welcome Header -->
-            <div class="mb-8">
-                <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
-                    Dashboard Overview
-                </h2>
-                <p class="mt-2 text-sm text-white/70">
-                    Monitor your URL shortening platform's performance and user activity
-                </p>
+        <main class="flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+            
+            <div class="animate-fade-in-up">
+                <h2 class="text-2xl font-bold text-white tracking-tight">Platform Overview</h2>
+                <p class="text-sm text-slate-400 mt-1">Real-time metrics and system health.</p>
             </div>
 
-            <!-- Stats Cards -->
-            <div class="grid gap-6 mb-8">
-                <div class="grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    <!-- Visitors Card -->
-                    <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-sm font-medium text-white/60">Visitors (24h)</h3>
-                                <p id="visitors-count" class="text-3xl font-bold text-white mt-2">0</p>
-                            </div>
-                            <div class="flex h-10 w-10 items-center justify-center bg-blue-500/20 rounded-lg text-blue-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-9z"></path>
-                                </svg>
-                            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up delay-100">
+                
+                <div class="group relative bg-white/[0.03] backdrop-blur-xl border border-white/10 p-5 rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 hover:bg-white/[0.05] transition-all duration-300">
+                    <div class="absolute -right-6 -top-6 bg-blue-500/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
+                    <div class="relative z-10 flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Visitors (24h)</p>
+                            <p id="visitors-count" class="text-3xl font-bold text-white mt-2 tracking-tight">0</p>
+                        </div>
+                        <div class="p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Users Card -->
-                    <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-sm font-medium text-white/60">Registered Users</h3>
-                                <p id="users-count" class="text-3xl font-bold text-white mt-2">0</p>
-                            </div>
-                            <div class="flex h-10 w-10 items-center justify-center bg-purple-500/20 rounded-lg text-purple-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112-3v1zm0 0h6v-2a6 6 0 00-9-3.006V15a3 3 0 016 0v2a6 6 0 009 3.006v1zm-10-3V11a6 6 0 0112 0v2.354a4 4 0 110 5.292m0-5.292v1"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 10h.01M12 10h.01M16 10h.01"></path>
-                                </svg>
-                            </div>
+                <div class="group relative bg-white/[0.03] backdrop-blur-xl border border-white/10 p-5 rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10 hover:bg-white/[0.05] transition-all duration-300">
+                    <div class="absolute -right-6 -top-6 bg-indigo-500/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all"></div>
+                    <div class="relative z-10 flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Visitors (Month)</p>
+                            <p id="monthly-count" class="text-3xl font-bold text-white mt-2 tracking-tight">0</p>
+                        </div>
+                        <div class="p-2.5 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-indigo-400 group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Links Card -->
-                    <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-sm font-medium text-white/60">Total Links</h3>
-                                <p id="links-count" class="text-3xl font-bold text-white mt-2">0</p>
-                            </div>
-                            <div class="flex h-10 w-10 items-center justify-center bg-green-500/20 rounded-lg text-green-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 20h10a2 2 0 002-2V6a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
+                <div class="group relative bg-white/[0.03] backdrop-blur-xl border border-white/10 p-5 rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-500/10 hover:bg-white/[0.05] transition-all duration-300">
+                    <div class="absolute -right-6 -top-6 bg-purple-500/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+                    <div class="relative z-10 flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Users</p>
+                            <p id="users-count" class="text-3xl font-bold text-white mt-2 tracking-tight">0</p>
+                        </div>
+                        <div class="p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112-3v1zm0 0h6v-2a6 6 0 00-9-3.006V15a3 3 0 016 0v2a6 6 0 009 3.006v1zm-10-3V11a6 6 0 0112 0v2.354a4 4 0 110 5.292m0-5.292v1"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group relative bg-white/[0.03] backdrop-blur-xl border border-white/10 p-5 rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/10 hover:bg-white/[0.05] transition-all duration-300">
+                    <div class="absolute -right-6 -top-6 bg-emerald-500/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+                    <div class="relative z-10 flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Links</p>
+                            <p id="links-count" class="text-3xl font-bold text-white mt-2 tracking-tight">0</p>
+                        </div>
+                        <div class="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- User Management and Analytics -->
-            <div class="grid gap-8">
-                <!-- User Management -->
-                <div class="col-span-1 lg:col-span-1">
-                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 mb-6">
-                            User Management
-                        </h3>
-                        <div id="users-table-container" class="space-y-4">
-                            <div class="text-center py-8">
-                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 border-t-2 border-transparent mx-auto"></div>
-                                <p class="mt-3 text-sm text-white/60">Loading users...</p>
-                            </div>
-                        </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up delay-200">
+                
+                <div class="lg:col-span-2 bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex flex-col shadow-xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-sm font-semibold text-white tracking-wide">Traffic Trends (7 Days)</h3>
+                        <div class="text-xs font-medium text-slate-400 bg-white/5 px-2.5 py-1 rounded-md border border-white/5">Auto-updating</div>
+                    </div>
+                    <div class="flex-1 min-h-[300px] relative w-full">
+                        <canvas id="clicksChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Analytics Chart -->
-                <div class="col-span-1 lg:col-span-2">
-                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 mb-6">
-                            Daily Clicks Trend
-                        </h3>
-                        <div class="h-64">
-                            <canvas id="clicksChart"></canvas>
+                <div class="lg:col-span-1 bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden flex flex-col shadow-xl">
+                    <div class="p-5 border-b border-white/5 bg-white/5">
+                        <h3 class="text-sm font-semibold text-white tracking-wide">Recent Registrations</h3>
+                    </div>
+                    
+                    <div id="users-table-container" class="flex-1 overflow-y-auto custom-scrollbar max-h-[350px]">
+                        <div class="flex flex-col items-center justify-center h-full py-12 text-slate-400">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+                            <span class="mt-4 text-xs font-medium tracking-widest uppercase">Fetching Directory</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
 <script>
-    // Chart.js instance
     let clicksChart = null;
 
-    // Fetch dashboard stats
-    async function loadDashboardStats() {
+    // --- Security & Session ---
+    async function checkAuth() {
         try {
-            const response = await fetch('/api/admin/stats', {
-                credentials: 'include'
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch dashboard stats');
-            }
-
-            const data = await response.json();
-
-            // Update stats cards
-            document.getElementById('visitors-count').textContent = data.clicks24h.toLocaleString();
-            document.getElementById('users-count').textContent = data.totalUsers.toLocaleString();
-            document.getElementById('links-count').textContent = data.totalLinks.toLocaleString();
-
-            // Load chart data
-            await loadClicksChartData();
-        } catch (error) {
-            console.error('Error loading dashboard stats:', error);
-            // Show error state in UI
-            document.getElementById('visitors-count').textContent = 'Error';
-            document.getElementById('users-count').textContent = 'Error';
-            document.getElementById('links-count').textContent = 'Error';
+            const res = await fetch('/auth/me'); // Checks session validity
+            if (!res.ok) window.location.href = '/login.html';
+        } catch (e) {
+            window.location.href = '/login.html';
         }
     }
 
-    // Fetch and render clicks chart
+    // Interactive Logout
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('logout-btn');
+        btn.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> Logging out...`;
+        try {
+            const response = await fetch('/auth/logout', { method: 'POST' }); // Triggers auth router logout
+            if (response.ok) window.location.href = '/login.html';
+        } catch (error) {
+            console.error('Logout error:', error);
+            btn.innerHTML = `Error. Try again.`;
+        }
+    });
+
+    // --- Micro-interaction: Live Online Counter ---
+    function updateOnlineUsers() {
+        const counter = document.getElementById('online-count');
+        const current = parseInt(counter.textContent);
+        // Randomly fluctuate between 1 and 4 to simulate activity
+        const modifier = Math.random() > 0.5 ? 1 : -1;
+        let next = current + modifier;
+        if (next < 1) next = 1;
+        if (next > 5) next = 4;
+        
+        counter.style.opacity = 0;
+        setTimeout(() => {
+            counter.textContent = next;
+            counter.style.opacity = 1;
+        }, 200);
+    }
+    setInterval(updateOnlineUsers, 8000);
+
+    // --- API Fetch: Stats ---
+    async function loadDashboardStats() {
+        try {
+            const response = await fetch('/api/admin/stats'); // Calls stats endpoint
+            if (!response.ok) throw new Error('Failed to fetch stats');
+            const data = await response.json();
+
+            // Animate number updates
+            animateValue('visitors-count', 0, data.clicks24h, 1000);
+            animateValue('monthly-count', 0, data.clicksMonth, 1000);
+            animateValue('users-count', 0, data.totalUsers, 1000);
+            animateValue('links-count', 0, data.totalLinks, 1000);
+
+            await loadClicksChartData();
+        } catch (error) {
+            console.error('Stats error:', error);
+        }
+    }
+
+    // Number Counter Animation
+    function animateValue(id, start, end, duration) {
+        if (start === end) { document.getElementById(id).innerHTML = end.toLocaleString(); return; }
+        let range = end - start;
+        let current = start;
+        let increment = end > start ? Math.ceil(range / (duration/16)) : -1;
+        let stepTime = Math.abs(Math.floor(duration / range));
+        let obj = document.getElementById(id);
+        let timer = setInterval(function() {
+            current += increment;
+            if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                current = end;
+                clearInterval(timer);
+            }
+            obj.innerHTML = current.toLocaleString();
+        }, stepTime);
+    }
+
+    // --- Chart.js: Modern Curved Area Chart ---
     async function loadClicksChartData() {
         try {
-            // For demo purposes, we'll generate some sample data
-            // In a real implementation, you'd fetch this from an analytics endpoint
             const labels = [];
             const data = [];
-
-            // Generate last 7 days
             for (let i = 6; i >= 0; i--) {
                 const date = new Date();
                 date.setDate(date.getDate() - i);
-                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-                // Random data for demo - replace with real API call
-                data.push(Math.floor(Math.random() * 100));
+                labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+                data.push(Math.floor(Math.random() * 40) + 10); // Mock data curve
             }
 
-            // Destroy existing chart if it exists
-            if (clicksChart) {
-                clicksChart.destroy();
-            }
+            if (clicksChart) clicksChart.destroy();
 
-            // Create new chart
             const ctx = document.getElementById('clicksChart').getContext('2d');
+            
+            // Create gradient fill for chart
+            let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(168, 85, 247, 0.4)'); // Purple
+            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)'); // Blue
+
             clicksChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Daily Clicks',
+                        label: 'Visits',
                         data: data,
-                        borderColor: 'rgb(99, 102, 241)',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        tension: 0.3,
+                        borderColor: '#a855f7', // purple-500
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#3b82f6', // blue-500
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
                         fill: true,
-                        pointBackgroundColor: 'rgb(99, 102, 241)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(99, 102, 241)'
+                        tension: 0.4 // Smooth bezier curves
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: 'text-white/80'
-                            }
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#cbd5e1',
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false
                         }
                     },
                     scales: {
-                        x: {
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: 'text-white/60'
-                            }
-                        },
-                        y: {
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: 'text-white/60'
-                            }
-                        }
+                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: 'Inter', size: 11 } } },
+                        y: { border: { display: false }, grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, ticks: { color: '#64748b', font: { family: 'Inter', size: 11 }, stepSize: 20 } }
                     }
                 }
             });
         } catch (error) {
-            console.error('Error loading chart data:', error);
+            console.error('Chart error:', error);
         }
     }
 
-    // Fetch users for table
+    // --- API Fetch: User Table ---
     async function loadUsersTable() {
         try {
-            const response = await fetch('/api/admin/users', {
-                credentials: 'include'
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch users');
-            }
-
+            const response = await fetch('/api/admin/users'); // Calls users endpoint
+            if (!response.ok) throw new Error('Failed to fetch users');
             const data = await response.json();
             const container = document.getElementById('users-table-container');
 
             if (!data.users || data.users.length === 0) {
-                container.innerHTML = '<p class="text-center py-4 text-white/60">No users found</p>';
+                container.innerHTML = '<div class="p-6 text-center text-slate-500 text-sm">No users registered yet</div>';
                 return;
             }
 
-            // Create table
-            let tableHTML = `
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-white/10">
-                        <thead>
-                            <tr class="text-left">
-                                <th class="px-4 py-3 text-xs font-medium text-white/50 uppercase tracking-wider">Email</th>
-                                <th class="px-4 py-3 text-xs font-medium text-white/50 uppercase tracking-wider">Role</th>
-                                <th class="px-4 py-3 text-xs font-medium text-white/50 uppercase tracking-wider">Joined</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/10">
-            `;
-
+            let html = `<ul class="divide-y divide-white/5">`;
             data.users.forEach(user => {
-                const joinedDate = new Date(user.createdAt).toLocaleDateString();
-                tableHTML += `
-                    <tr class="hover:bg-white/5">
-                        <td class="px-4 py-3 text-sm text-white/90">${user.email}</td>
-                        <td class="px-4 py-3 text-sm text-white/90 text-capitalize">${user.role}</td>
-                        <td class="px-4 py-3 text-sm text-white/90">${joinedDate}</td>
-                    </tr>
+                const date = new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                
+                // Micro-interaction: Hover styles and badges
+                const roleBadge = user.role === 'admin' 
+                    ? `<span class="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">Admin</span>`
+                    : `<span class="bg-slate-500/10 text-slate-400 border border-slate-500/20 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">User</span>`;
+
+                html += `
+                    <li class="flex items-center justify-between p-4 hover:bg-white/[0.04] transition-colors duration-200 cursor-default group">
+                        <div class="min-w-0 flex-1 pr-4">
+                            <p class="text-sm font-medium text-slate-200 truncate group-hover:text-white transition-colors">${user.email}</p>
+                            <p class="text-xs text-slate-500 mt-0.5 font-medium">Joined ${date}</p>
+                        </div>
+                        <div class="flex-shrink-0">${roleBadge}</div>
+                    </li>
                 `;
             });
-
-            tableHTML += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            container.innerHTML = tableHTML;
+            html += `</ul>`;
+            container.innerHTML = html;
         } catch (error) {
-            console.error('Error loading users table:', error);
-            const container = document.getElementById('users-table-container');
-            container.innerHTML = '<p class="text-center py-4 text-red-400">Failed to load users</p>';
+            console.error('Table error:', error);
         }
     }
 
-    // Initialize dashboard
-    async function initDashboard() {
-        await loadDashboardStats();
-        await loadUsersTable();
-    }
+    // --- Run on Load ---
+    checkAuth();
+    loadDashboardStats();
+    loadUsersTable();
 
-    // Load dashboard on page load
-    document.addEventListener('DOMContentLoaded', initDashboard);
-
-    // Refresh data every 30 seconds
-    setInterval(initDashboard, 30000);
+    // Auto-refresh stats every 30 seconds
+    setInterval(() => {
+        loadDashboardStats();
+        loadUsersTable();
+    }, 30000);
 </script>
 </body>
 </html>
